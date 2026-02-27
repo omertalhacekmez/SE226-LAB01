@@ -13,7 +13,8 @@ int main() {
     int minute = second / 60;
     second = second % 60;
 
-    cout << secondBackup << " seconds is " << hour << " hours, " << minute << " minutes, and" << second << "seconds.";
+    cout << secondBackup << " seconds is " << hour << " hours, " << minute << " minutes, and " << second << " seconds.";
 
     return 0;
+
 }
