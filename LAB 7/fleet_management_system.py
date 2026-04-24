@@ -1,0 +1,122 @@
+class Vehicle:
+
+    vid="";
+    model="";
+    year=0;
+
+    def __init__(self,vid,model,year):
+        self.vid=vid
+        self.model=model
+        self.year=year
+
+    def __str__(self):
+        return 'VID: '+str(self.vid)+' | '+ str(self.model)+' | ('+str(self.year)+') '
+
+    def __eq__(self,other):
+        return (self.vid)==(other.vid)
+
+    def is_new(self,n):
+        if 2026-n <self.year:
+            return True
+        return False
+
+class Car(Vehicle):
+    doors=0;
+    fuel_type=''
+
+    def __init__(self,vid,model,year,fuel_type,doors):
+        super().__init__(vid,model,year)
+        self.fuel_type=fuel_type
+        self.doors=doors
+
+    def __str__(self):
+        return '[Car] '+ super().__str__() + ' | Fuel: '+str(self.fuel_type)+' | '+ str(self.doors)+ 'Door'
+
+class Truck(Vehicle):
+    max_load=0
+    axles=0
+
+    def __init__(self, vid, model, year, max_load, axles):
+        super().__init__(vid, model, year)
+        self.max_load = max_load
+        self.axles = axles
+
+    def __str__(self):
+        return '[Truck] '+ super().__str__() + ' | Load: '+str(self.max_load)+' | '+ str(self.axles)+ 'Axles'
+
+class Motorcycle(Vehicle):
+    engine_cc = 0
+    type = ''
+
+    def __init__(self, vid, model, year, engine_cc, type):
+        super().__init__(vid, model, year)
+        self.engine_cc = engine_cc
+        self.type = type
+
+    def __str__(self):
+        return '[Motorcycle] '+ super().__str__() + ' | Eng: '+str(self.engine_cc)+' | Type: '+ str(self.type)
+
+
+
+def save_fleet_to_file(vehicles, filename):
+    with open(filename, 'w') as f:
+        for v in vehicles:
+            if isinstance(v, Car):
+                f.write(f"Car,{v.vid},{v.model},{v.year},{v.fuel_type},{v.doors}\n")
+            elif isinstance(v, Truck):
+                f.write(f"Truck,{v.vid},{v.model},{v.year},{v.max_load},{v.axles}\n")
+            elif isinstance(v, Motorcycle):
+                f.write(f"Motorcycle,{v.vid},{v.model},{v.year},{v.engine_cc},{v.type}\n")
+
+
+def load_fleet_from_file(filename):
+    vehicles = []
+    with open(filename, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(',')
+            vtype = parts[0]
+
+            if vtype == 'Car':
+                v = Car(parts[1], parts[2], int(parts[3]), parts[4], int(parts[5]))
+            elif vtype == 'Truck':
+                v = Truck(parts[1], parts[2], int(parts[3]), int(parts[4]), int(parts[5]))
+            elif vtype == 'Motorcycle':
+                v = Motorcycle(parts[1], parts[2], int(parts[3]), int(parts[4]), parts[5])
+            else:
+                continue
+
+            vehicles.append(v)
+    return vehicles
+
+fleet = [
+    Car("V001", "Tesla Model 3", 2023, "Electric", 4),
+    Car("V002", "Toyota Corolla", 2018, "Petrol", 4),
+    Truck("T101", "Volvo FH16", 2019, 25000, 6),
+    Truck("T102", "Mercedes Actros", 2021, 18000, 4),
+    Motorcycle("M301", "Yamaha R1", 2024, 998, "Sport"),
+    Motorcycle("M302", "Harley Davidson", 2015, 1200, "Cruiser"),
+]
+
+save_fleet_to_file(fleet, "fleet.txt")
+
+print("Loading fleet data from 'fleet.txt'...")
+loaded = load_fleet_from_file("fleet.txt")
+print(f"{len(loaded)} vehicles loaded successfully.")
+
+print("\n--- All Vehicles ---")
+for v in loaded:
+    print(v)
+
+
+print("\n--- Recent Vehicles (Last 4 Years) ---")
+for v in loaded:
+    if v.is_new(4):
+        print(v)
+
+print("\n--- Electric Cars Only ---")
+for v in loaded:
+    if isinstance(v, Car) and v.fuel_type == "Electric":
+        print(v)
